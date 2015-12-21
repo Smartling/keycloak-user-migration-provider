@@ -1,0 +1,80 @@
+/*
+ * Copyright 2015 Smartling, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id "com.github.zhurlik.jbossmodules" version "0.14"
+}
+
+group = 'com.smartling.keycloak.provider'
+description = 'User Migration Federation Provider'
+version = '1.0.0' + (project.hasProperty('release') && project.ext.release ? '-RELEASE' : '-SNAPSHOT')
+
+apply plugin: "com.github.zhurlik.jbossmodules"
+
+ext {
+    keycloakVersion = '1.7.0.Final'
+}
+
+repositories {
+    jcenter()
+}
+
+jbossrepos {
+    keycloak {
+        home = keycloakHome
+    }
+}
+
+dependencies {
+    jbossmodules project('user-model')
+    jbossmodules project('user-migration-federation-provider')
+}
+
+modules {
+
+    userMigration {
+        moduleName = 'net.smartling.provider.federation'
+        resources = ["user-migration-federation-provider-${version}.jar", "user-model-${version}.jar"]
+        dependencies = [
+                [name: 'org.keycloak.keycloak-core'],
+                [name: 'org.keycloak.keycloak-model-api'],
+                [name: 'org.jboss.resteasy.resteasy-jaxrs'],
+                [name: 'org.jboss.logging'],
+                [name: 'org.apache.httpcomponents'],
+                [name: 'javax.ws.rs.api']
+        ]
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    version = rootProject.version
+    repositories {
+        jcenter()
+    }
+}
+
+makeModules.dependsOn subprojects.jar
+
+task moduleZip(type: Zip) {
+    description 'Packages Wildfly modules for distribution'
+    dependsOn makeModules
+    from 'build/install/keycloak/'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}
