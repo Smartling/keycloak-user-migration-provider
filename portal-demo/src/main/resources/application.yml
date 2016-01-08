@@ -1,0 +1,9 @@
+server:
+  port: 9082
+
+keycloak:
+  configurationFile: "classpath:keycloak.json"
+
+spring:
+  freemarker:
+    cache: false

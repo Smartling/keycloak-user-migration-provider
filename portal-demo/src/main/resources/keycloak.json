@@ -1,0 +1,10 @@
+{
+  "realm": "Eon",
+  "realm-public-key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApDc8DuKDzX3iw8ipVhOfyCc1K6tYbm7Mi5BmbcXhrLCpnxdQ9AzNHldV+dMiJVPQd4hl3dlrLitdymrkWPX3E3sLomO2W8QUbz0QYNbuYxtBisNMEH6/41l9REr0xEb0JyHKqVT4dsv6a10xLxZ+/zyGFOk30Y/XvNf9/uikAEc4IKIJrxWxIHR+tpM/GzW1rbcaVp+dnqHyjwHnEU+2aoBTqC0Wq6UTJUPxnJ9IlV2evrBhFe9+oFOUFr10wj5xMEqEiNhbnXJ5jVytgEIf9M9uC8URa1haDLl4TnxICQyAprX4C/Pq3ybuckLGo8bGCS/GlgxkV0h/SfO+uUYULQIDAQAB",
+  "auth-server-url": "http://localhost:8080/auth",
+  "ssl-required": "external",
+  "resource": "demo-portal",
+  "credentials": {
+    "secret": "06694847-9253-4d4e-bd8f-9920d15d8e03"
+  }
+}
