@@ -1,0 +1,41 @@
+[
+  {
+    "email"     : "craig@007.com",
+    "emailVerified" : true,
+    "enabled"   : true,
+    "firstName" : "Daniel",
+    "lastName"  : "Craig",
+    "title"     : "James Bond",
+    "password"  : "20202291b1f44baf5a2b0e1051b6fdabc5f8c06df4d9a43af32daa7c6843eb3a",
+    "salt"      : "aef9823",
+    "roles"     : [
+      "user"
+    ]
+  },
+  {
+    "email"     : "green@007.com",
+    "emailVerified" : true,
+    "enabled"   : true,
+    "firstName" : "Eva",
+    "lastName"  : "Green",
+    "title"     : "Vesper Lynd",
+    "password"  : "bba3c22363ecebf8b5f50e11c20b6d2928a4f5b197f5877dc3a88c1bd200f68d",
+    "salt"      : "jipn5769",
+    "roles"     : [
+      "user"
+    ]
+  },
+  {
+    "email"     : "mendes@007.com",
+    "emailVerified" : true,
+    "enabled"   : true,
+    "firstName" : "Sam",
+    "lastName"  : "Mendes",
+    "title"     : "Director",
+    "password"  : "68252a68dc4fccd7b824a80ba4d8337c74b2fe238d060f7e5d34adb0a366186a",
+    "salt"      : "dhfq178",
+    "roles"     : [
+      "user"
+    ]
+  }
+]
