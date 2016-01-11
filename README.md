@@ -98,6 +98,8 @@ The included sample users are:
 
 For simplicity, all of the user's passwords are `Martini4`.
 
+_Note: due to a bug, you'll have to log in twice. This will be fixed shortly._
+
 [0]: http://keycloak.jboss.org/
 [1]: http://keycloak.github.io/docs/userguide/keycloak-server/html/user_federation.html
 [2]: http://downloads.jboss.org/keycloak/1.7.0.Final/keycloak-1.7.0.Final.tar.gz
