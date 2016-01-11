@@ -35,7 +35,6 @@ import org.keycloak.models.UserModel;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -86,16 +85,16 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
     @Override
     public UserModel register(RealmModel realm, UserModel user) {
-        LOG.warn("In call to register user");
+        LOG.warn("User registration not supported here.");
         return null;
     }
 
     @Override
     public boolean removeUser(RealmModel realm, UserModel user) {
-        LOG.warn("In call to remove user:" + user.getUsername());
+        LOG.warnf("In call to remove user: %s", user.getUsername());
         user.setFederationLink(null);
         session.users().removeUser(realm, user);
-        LOG.warn("Removed federation link for user: " + user.getUsername());
+        LOG.warnf("Removed user: %s", user.getUsername());
         return true;
     }
 
@@ -103,8 +102,8 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
         String username = rawUsername.toLowerCase().trim();
         FederatedUserModel remoteUser = federatedUserService.getUserDetails(username);
-        LOG.info("Creating user model for: " + username);
-        UserModel userModel = session.userStorage().addUser(realm, username);
+        LOG.infof("Creating user model for: %s", username);
+        UserModel userModel = session.users().addUser(realm, username);
 
         if (!username.equals(remoteUser.getEmail())) {
             throw new IllegalStateException(String.format("Local and remote users differ: [%s != %s]", username, remoteUser.getUsername()));
@@ -137,18 +136,13 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
     }
 
     protected boolean exists(RealmModel realm, String username) {
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info("User? " + session.userStorage().getUserByUsername(username, realm));
-            LOG.info("Email? " + session.userStorage().getUserByEmail(username, realm));
-        }
-
+        LOG.infof("Checking if user exists: %s", username);
         return session.userStorage().getUserByUsername(username, realm) != null || session.userStorage().getUserByEmail(username, realm) != null;
     }
 
     @Override
     public UserModel getUserByUsername(RealmModel realm, String username) {
-        LOG.warn("Get by username: " + username);
+        LOG.infof("Get by username: %s", username);
 
         if (exists(realm, username)) {
             LOG.warn(String.format("User %s already exists in realm %s, returning null", username, realm.getName()));
@@ -158,14 +152,14 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
         try {
             return this.createUserModel(realm, username);
         } catch (NotFoundException ex) {
-            LOG.error("Federated user not found: " + username);
+            LOG.errorf("Federated user not found: %s", username);
             return null;
         }
     }
 
     @Override
     public UserModel getUserByEmail(RealmModel realm, String email) {
-        LOG.warn("Get by email: " + email);
+        LOG.infof("Get by email: %s", email);
 
         if (exists(realm, email)) {
             LOG.warn(String.format("Email %s already exists in realm %s, returning null", email, realm.getName()));
@@ -182,7 +176,7 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
     @Override
     public List<UserModel> searchByAttributes(Map<String, String> attributes, RealmModel realm, int maxResults) {
-        LOG.warn("In searchByAttributes(): " + attributes);
+        LOG.debug("In searchByAttributes(): " + attributes);
         return Collections.emptyList();
     }
 
@@ -215,7 +209,7 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
     @Override
     public boolean validCredentials(RealmModel realm, UserModel user, List<UserCredentialModel> input) {
 
-        LOG.info("Validating credentials");
+        LOG.infof("Validating credentials for %s", user.getUsername());
 
         if (input == null || input.isEmpty()) {
             throw new IllegalArgumentException("UserCredentialModel list is empty or null!");
@@ -227,8 +221,7 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
         if (valid) {
             user.updateCredential(credentials);
-            session.userStorage().getUserById(user.getId(), realm).updateCredential(credentials);
-            session.userStorage().getUserById(user.getId(), realm).setFederationLink(null);
+            user.setFederationLink(null);
         }
 
         return valid;
@@ -253,9 +246,9 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
     @Override
     public boolean isValid(RealmModel realm, UserModel local)
     {
-        LOG.info("Checking if user is valid: " + local.getUsername());
+        LOG.infof("Checking if user is valid: %s", local.getUsername());
         Response response = federatedUserService.validateUserExists(local.getUsername());
-        LOG.warn("Checked if " + local.getUsername() + " is valid: " + response.getStatus());
+        LOG.infof("Checked if %s is valid: %d", local.getUsername(), response.getStatus());
         return HttpStatus.SC_ACCEPTED == response.getStatus();
     }
 
