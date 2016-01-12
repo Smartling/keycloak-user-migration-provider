@@ -50,7 +50,6 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
     private static final Logger LOG = Logger.getLogger(RemoteUserFederationProvider.class);
     private static final Set<String> supportedCredentialTypes = Collections.singleton(UserCredentialModel.PASSWORD);
-    static final String UID_ATTRIBUTE = "uid";
 
     private KeycloakSession session;
     private UserFederationProviderModel model;
@@ -69,7 +68,7 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
     public RemoteUserFederationProvider(KeycloakSession session, UserFederationProviderModel model, String uri) {
         this(session, model, buildClient(uri));
-        LOG.info("Using validation base URI: " + uri);
+        LOG.debugf("Using validation base URI: " + uri);
     }
 
     protected RemoteUserFederationProvider(KeycloakSession session, UserFederationProviderModel model, FederatedUserService federatedUserService) {
@@ -85,16 +84,12 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
 
     @Override
     public UserModel register(RealmModel realm, UserModel user) {
-        LOG.warn("User registration not supported here.");
+        LOG.warn("User registration not supported.");
         return null;
     }
 
     @Override
     public boolean removeUser(RealmModel realm, UserModel user) {
-        LOG.warnf("In call to remove user: %s", user.getUsername());
-        user.setFederationLink(null);
-        session.users().removeUser(realm, user);
-        LOG.warnf("Removed user: %s", user.getUsername());
         return true;
     }
 
@@ -103,7 +98,7 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
         String username = rawUsername.toLowerCase().trim();
         FederatedUserModel remoteUser = federatedUserService.getUserDetails(username);
         LOG.infof("Creating user model for: %s", username);
-        UserModel userModel = session.users().addUser(realm, username);
+        UserModel userModel = session.userStorage().addUser(realm, username);
 
         if (!username.equals(remoteUser.getEmail())) {
             throw new IllegalStateException(String.format("Local and remote users differ: [%s != %s]", username, remoteUser.getUsername()));
@@ -135,19 +130,9 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
         return userModel;
     }
 
-    protected boolean exists(RealmModel realm, String username) {
-        LOG.infof("Checking if user exists: %s", username);
-        return session.userStorage().getUserByUsername(username, realm) != null || session.userStorage().getUserByEmail(username, realm) != null;
-    }
-
     @Override
     public UserModel getUserByUsername(RealmModel realm, String username) {
         LOG.infof("Get by username: %s", username);
-
-        if (exists(realm, username)) {
-            LOG.warn(String.format("User %s already exists in realm %s, returning null", username, realm.getName()));
-            return null;
-        }
 
         try {
             return this.createUserModel(realm, username);
@@ -160,11 +145,6 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
     @Override
     public UserModel getUserByEmail(RealmModel realm, String email) {
         LOG.infof("Get by email: %s", email);
-
-        if (exists(realm, email)) {
-            LOG.warn(String.format("Email %s already exists in realm %s, returning null", email, realm.getName()));
-            return null;
-        }
 
         try {
             return this.createUserModel(realm, email);
@@ -246,14 +226,14 @@ public class RemoteUserFederationProvider implements UserFederationProvider {
     @Override
     public boolean isValid(RealmModel realm, UserModel local)
     {
-        LOG.infof("Checking if user is valid: %s", local.getUsername());
+        LOG.debugf("Checking if user is valid: %s", local.getUsername());
         Response response = federatedUserService.validateUserExists(local.getUsername());
         LOG.infof("Checked if %s is valid: %d", local.getUsername(), response.getStatus());
-        return HttpStatus.SC_ACCEPTED == response.getStatus();
+        return HttpStatus.SC_OK == response.getStatus();
     }
 
     @Override
     public void close() {
-        LOG.warn("In call to close()");
+        // no-op
     }
 }
