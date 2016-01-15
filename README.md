@@ -1,7 +1,8 @@
 # Keycloak Migration User Federation Provider
   
 Provides a [Keycloak][0] [user federation provider][1] for migrating users
-from a legacy system to Keycloak with zero downtime.
+from a legacy system to Keycloak with zero downtime. For more information,
+read our post, [Migrate to Keycloak with Zero Downtime][3] on the Smartling Engineering Blog.
 
 ## Key features of the migration provider
 
@@ -20,6 +21,8 @@ roll back with little to no user facing impact
 
 The Smartling user federation provider will import your users on demand into Keycloak's
 local storage, including username and password validation with the legacy system.
+For an in depth look at how on demand user migration works, read our post,
+[Migrate to Keycloak with Zero Downtime][3] on the Smartling Engineering Blog.
 
 ## Installing the Federation Provider
 
@@ -101,3 +104,4 @@ For simplicity, all of the user's passwords are `Martini4`.
 [0]: http://keycloak.jboss.org/
 [1]: http://keycloak.github.io/docs/userguide/keycloak-server/html/user_federation.html
 [2]: http://downloads.jboss.org/keycloak/1.7.0.Final/keycloak-1.7.0.Final.tar.gz
+[3]: http://tech.smartling.com/migrate-to-keycloak-with-zero-downtime/
